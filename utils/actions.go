@@ -147,7 +147,7 @@ func CreateFileIfNotExists(fileName string, dir string, base64String string) (*m
 }
 
 
-func Listing(dir string) m.ListingInfo {
+func Listing(dir string) *m.ListingInfo {
 	list, _ := ioutil.ReadDir(dir)
 	var listingInfo m.ListingInfo
 	for _, file := range list {
@@ -170,7 +170,7 @@ func Listing(dir string) m.ListingInfo {
 		listingInfo.Files = append(listingInfo.Files, fileInfo)
 	}
 
-	return listingInfo
+	return &listingInfo
 }
 
 
