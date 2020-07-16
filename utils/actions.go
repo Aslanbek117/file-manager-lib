@@ -2,6 +2,8 @@ package utils
 
 import (
 	"encoding/base64"
+	e "file-manager-lib/errors"
+	m "file-manager-lib/models"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gosimple/slug"
 	c "github.com/otiai10/copy"
@@ -12,7 +14,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	m "file-manager/models"
 )
 
 func MoveFile(sourceFilePath, moveToDir string) error {
@@ -110,14 +111,14 @@ func RemoveFile(fileName string, dir string) error {
 func CreateFileIfNotExists(fileName string, dir string, base64String string) (*m.FileInfo,  error) {
 
 	if !strings.Contains(fileName, ".") {
-		return nil, errors.New("Extension was not provided")
+		return nil, e.New("Extension was not provided")
 	}
 
 	slugStr := getSlug(fileName)
 
 	_, err := os.Stat(dir + "/"+ fileName)
 	if !os.IsNotExist(err) {
-		return nil, errors.New("file or directory exists")
+		return nil, e.New("file or directory exists")
 	}
 
 	filePath := filepath.Join(dir, filepath.Base(slugStr))
