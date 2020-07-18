@@ -19,7 +19,7 @@ type FileInfo struct {
 
 
 type ListingInfo struct {
-	Files []FileInfo
+	Files []FileInfo   `json:"files"`
 }
 
 

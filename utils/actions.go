@@ -167,6 +167,7 @@ func Listing(dir string) *m.ListingInfo {
 			IsDir:        file.IsDir(),
 			MimeType:	  mimeType,
 		}
+
 		listingInfo.Files = append(listingInfo.Files, fileInfo)
 	}
 
@@ -179,3 +180,78 @@ func getSlug(fileName string) string {
 	slugStr := slug.Make(strings.Split(fileName, ".")[0]) + "." + strings.Split(fileName, ".")[1]
 	return slugStr
 }
+
+
+
+
+func fileInfoFromInterface(v os.FileInfo, directory string) *m.FileInfo {
+	mime, _ := mimetype.DetectFile(v.Name())
+	var mimeType = mime.String()
+
+	if v.IsDir() {
+		mimeType = "inode/directory"
+	}
+	return &m.FileInfo{v.Name(), v.Name(), directory, filepath.Join(directory, v.Name()), filepath.Ext(v.Name()), v.Size(), v.ModTime(), v.IsDir(), mimeType}
+}
+
+// Node represents a node in a directory tree.
+type Node struct {
+	Title string   		 `json:"title"`
+	FullPath string 	 `json:"path"`
+	Key  string    		 `json:"key"`
+	Info     *m.FileInfo `json:"info"`
+	Children []*Node  	 `json:"children"`
+	Parent   *Node    	 `json:"-"`
+}
+
+// Create directory hierarchy.
+func GetFileTree(root string, onlyDirectories bool) (result *Node, err error) {
+	absRoot, err := filepath.Abs(root)
+	if err != nil {
+		return
+	}
+	parents := make(map[string]*Node)
+	walkFunc := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		var key string
+		if !info.IsDir() {
+			key = ""
+		} else {
+			key = path
+		}
+		parents[path] = &Node{
+			Title: filepath.Base(path),
+			Key:   key,
+			FullPath: path,
+			Info:     fileInfoFromInterface(info, filepath.Base(path)),
+			Children: make([]*Node, 0),
+		}
+		return nil
+	}
+	if err = filepath.Walk(absRoot, walkFunc); err != nil {
+		return
+	}
+	for path, node := range parents {
+		parentPath := filepath.Dir(path)
+		parent, exists := parents[parentPath]
+		if !exists { // If a parent does not exist, this is the root.
+			result = node
+		} else {
+			node.Parent = parent
+			if onlyDirectories {
+				if node.Info.IsDir {
+					parent.Children = append(parent.Children, node)
+				}
+			} else {
+				parent.Children = append(parent.Children, node)
+			}
+
+		}
+	}
+	return
+}
+
+
