@@ -2,8 +2,8 @@ package utils
 
 import (
 	"encoding/base64"
-	e "file-manager-lib/errors"
-	m "file-manager-lib/models"
+	e "github.com/Aslanbek117/file-manager-lib/errors"
+	m "github.com/Aslanbek117/file-manager-lib/models"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gosimple/slug"
 	c "github.com/otiai10/copy"

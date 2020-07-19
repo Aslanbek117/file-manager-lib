@@ -1,4 +1,4 @@
-module file-manager-lib
+module github.com/Aslanbek117/file-manager-lib
 
 require (
 	github.com/gabriel-vasile/mimetype v1.1.1
