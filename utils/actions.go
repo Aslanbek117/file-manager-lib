@@ -41,6 +41,12 @@ func MoveFile(sourceFilePath, moveToDir string) error {
 	return nil
 }
 
+//
+//oldFileName  and newFileName - full path to file with old/new names
+func RenameFile(oldFileName  string, newFileName string)  error {
+	return os.Rename(oldFileName, newFileName)
+}
+
 
 
 
